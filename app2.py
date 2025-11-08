@@ -193,13 +193,13 @@ if process_button:
                 ]
 
                 # --- PROSES DEPO SBY (DENGAN KONDISI) ---
-                depo_sby = pd.read_csv(depo_sby_file, sep=None, engine='python')
+                depo_sby = pd.read_csv(depo_sby_file, sep='[;,]', engine='python', encoding='utf-8-sig')
                 available_cols_depo_sby = [col for col in columns if col in depo_sby.columns]
                 depo_sby = depo_sby[available_cols_depo_sby].copy()
                 
                 # (DIUBAH) Hanya muat dan gabung jika file diunggah
                 if gantungan_depo_sby_file is not None:
-                    depo_sby_gantungan = pd.read_csv(gantungan_depo_sby_file, sep=None, engine='python')
+                    depo_sby_gantungan = pd.read_csv(gantungan_depo_sby_file, sep='[;,]', engine='python', encoding='utf-8-sig')
                     available_cols_gantungan = [col for col in columns if col in depo_sby_gantungan.columns]
                     depo_sby_gantungan = depo_sby_gantungan[available_cols_gantungan].copy()
                     depo_sby = pd.concat([depo_sby, depo_sby_gantungan], ignore_index=True)
@@ -234,13 +234,13 @@ if process_button:
                 ].copy()
                 
                 # --- PROSES SBY DEPO (DENGAN KONDISI) ---
-                sby_depo = pd.read_csv(sby_depo_file, sep=None, engine='python')
+                sby_depo = pd.read_csv(sby_depo_file, sep='[;,]', engine='python', encoding='utf-8-sig')
                 available_cols_sby_depo = [col for col in columns if col in sby_depo.columns]
                 sby_depo = sby_depo[available_cols_sby_depo].copy()
 
                 # (DIUBAH) Hanya muat dan gabung jika file diunggah
                 if gantungan_sby_depo_file is not None:
-                    sby_depo_gantungan = pd.read_csv(gantungan_sby_depo_file, sep=None, engine='python')
+                    sby_depo_gantungan = pd.read_csv(gantungan_sby_depo_file, sep='[;,]', engine='python', encoding='utf-8-sig')
                     available_cols_gantungan_sby_depo = [col for col in columns if col in sby_depo_gantungan.columns]
                     sby_depo_gantungan = sby_depo_gantungan[available_cols_gantungan_sby_depo].copy()
                     sby_depo = pd.concat([sby_depo, sby_depo_gantungan], ignore_index=True)
