@@ -292,6 +292,7 @@ if process_button:
                 sby_depo_va_ri_total = pd.concat([sby_depo_va_ri, total_va_ri], ignore_index=True)
                 depo_sby_va_ri_total = pd.concat([depo_sby_va_ri, total_va_ri], ignore_index=True)
 
+
                 # --- PROSES TOTAL (PN) ---
                 total_row_PN = pd.DataFrame({
                     "Debet": [depo_sby_PN["Debet"].sum() + sby_depo_PN["Debet"].sum()],
