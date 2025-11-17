@@ -9,11 +9,11 @@ from collections import Counter
 # ---------------------------------------------------------------------
 # KONFIGURASI APLIKASI STREAMLIT
 # ---------------------------------------------------------------------
-st.set_page_config(layout="wide", page_title="Pencocokan Hutang/Piutang DEPO - SBY")
+st.set_page_config(layout="wide", page_title="Pencocokan Hutang/Piutang CABANG - SBY")
 
-st.title("Pencocokan Hutang/Piutang Afiliasi DEPO - SBY")
+st.title("Pencocokan Hutang/Piutang Afiliasi CABANG - SBY")
 # Diubah: Menghapus referensi ke file gantungan
-st.markdown("Unggah 2 file CSV wajib (DEPO SBY & SBY DEPO) untuk memulai.")
+st.markdown("Unggah 2 file CSV wajib (CABANG SBY & SBY CABANG) untuk memulai.")
 
 # ---------------------------------------------------------------------
 # FUNGSI-FUNGSI (DARI KODE ANDA - TIDAK DIUBAH)
@@ -146,19 +146,19 @@ def combine_with_spacing(list_df, all_columns):
 # TATA LETAK INPUT (UI) - DISEDERHANAKAN
 # ---------------------------------------------------------------------
 
-# --- Bagian DEPO - SBY ---
-st.header("Bagian DEPO - SBY")
+# --- Bagian CABANG - SBY ---
+st.header("Bagian CABANG - SBY")
 # Diubah: Menghapus st.columns dan file gantungan
-depo_sby_file = st.file_uploader("Input File DEPO SBY (Wajib)", type="csv")
+cabang_sby_file = st.file_uploader("Input File CABANG SBY (Wajib)", type="csv")
 
-# --- Bagian SBY - DEPO ---
-st.header("Bagian SBY - DEPO")
+# --- Bagian SBY - CABANG ---
+st.header("Bagian SBY - CABANG")
 # Diubah: Menghapus st.columns dan file gantungan
-sby_depo_file = st.file_uploader("Input file SBY DEPO (Wajib)", type="csv")
+sby_cabang_file = st.file_uploader("Input file SBY CABANG (Wajib)", type="csv")
 
 # --- Input Selisih ---
 st.header("Input Selisih")
-selisih_input = st.number_input("Input selisih periode sebelumnya", value=869412210, step=1, help="Masukkan nilai selisih dari periode sebelumnya.")
+selisih_input = st.number_input("Input selisih periode sebelumnya", value=0, step=1, help="Masukkan nilai selisih dari periode sebelumnya.")
 
 st.divider()
 
@@ -170,8 +170,8 @@ process_button = st.button("Mulai Proses Pencocokan", type="primary", use_contai
 # ---------------------------------------------------------------------
 if process_button:
     # Validasi input (Logika ini sudah benar, tidak perlu diubah)
-    if not all([depo_sby_file, sby_depo_file]):
-        st.error("Harap unggah file WAJIB (DEPO SBY & SBY DEPO) untuk melanjutkan.")
+    if not all([cabang_sby_file, sby_cabang_file]):
+        st.error("Harap unggah file WAJIB (CABANG SBY & SBY CABANG) untuk melanjutkan.")
     else:
         try:
             with st.spinner("Sedang memproses... Harap tunggu..."):
@@ -187,214 +187,214 @@ if process_button:
                 'Flag KBM/KDRT', 'Target_First', 'Target_Jenis', 'Target_Second'
                 ]
 
-                # --- PROSES DEPO SBY ---
+                # --- PROSES CABANG SBY ---
                 # Logika pemisah fleksibel Anda tetap dipertahankan
-                depo_sby = pd.read_csv(depo_sby_file, sep=None, engine='python', encoding='utf-8-sig')
-                available_cols_depo_sby = [col for col in columns if col in depo_sby.columns]
-                depo_sby = depo_sby[available_cols_depo_sby].copy()
+                cabang_sby = pd.read_csv(cabang_sby_file, sep=None, engine='python', encoding='utf-8-sig')
+                available_cols_cabang_sby = [col for col in columns if col in cabang_sby.columns]
+                cabang_sby = cabang_sby[available_cols_cabang_sby].copy()
                 
-                # (DIHAPUS) Blok 'if gantungan_depo_sby_file is not None' dihapus
+                # (DIHAPUS) Blok 'if gantungan_cabang_sby_file is not None' dihapus
 
                 # (Logika asli Anda berlanjut)
-                depo_sby["ID_1"] = np.nan
-                depo_sby = depo_sby.reset_index()
+                cabang_sby["ID_1"] = np.nan
+                cabang_sby = cabang_sby.reset_index()
 
-                depo_sby["Debet"] = depo_sby["Debet"].replace("-", 0)
-                depo_sby["Kredit"] = depo_sby["Kredit"].replace("-", 0)
-                depo_sby["Debet"] = depo_sby["Debet"].astype(str).str.replace(",", "", regex=False)
-                depo_sby["Kredit"] = depo_sby["Kredit"].astype(str).str.replace(",", "", regex=False)
-                depo_sby["Debet"] = pd.to_numeric(depo_sby["Debet"]).fillna(0)
-                depo_sby["Kredit"] = pd.to_numeric(depo_sby["Kredit"]).fillna(0)
+                cabang_sby["Debet"] = cabang_sby["Debet"].replace("-", 0)
+                cabang_sby["Kredit"] = cabang_sby["Kredit"].replace("-", 0)
+                cabang_sby["Debet"] = cabang_sby["Debet"].astype(str).str.replace(",", "", regex=False)
+                cabang_sby["Kredit"] = cabang_sby["Kredit"].astype(str).str.replace(",", "", regex=False)
+                cabang_sby["Debet"] = pd.to_numeric(cabang_sby["Debet"]).fillna(0)
+                cabang_sby["Kredit"] = pd.to_numeric(cabang_sby["Kredit"]).fillna(0)
 
-                depo_sby_PN = depo_sby[depo_sby['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
-                depo_sby = depo_sby[~depo_sby['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
+                cabang_sby_PN = cabang_sby[cabang_sby['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
+                cabang_sby = cabang_sby[~cabang_sby['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
 
-                depo_sby["ID_1"] = depo_sby["Keperluan"].str.extract(r'(?:ID)?BKK\s*[:\-]?\s*(\d+/\d{4})', expand=False)
-                depo_sby_bkk = depo_sby[depo_sby["ID_1"].notna()].copy()
-                depo_sby = depo_sby[depo_sby["ID_1"].isna()].copy()
+                cabang_sby["ID_1"] = cabang_sby["Keperluan"].str.extract(r'(?:ID)?BKK\s*[:\-]?\s*(\d+/\d{4})', expand=False)
+                cabang_sby_bkk = cabang_sby[cabang_sby["ID_1"].notna()].copy()
+                cabang_sby = cabang_sby[cabang_sby["ID_1"].isna()].copy()
 
-                depo_sby["ID_1"] = depo_sby["Keperluan"].str.extract(r'(?:ID)?BKM\s*[:\-]?\s*(\d+/\d{4})', expand=False)
-                depo_sby_bkm = depo_sby[depo_sby["ID_1"].notna()].copy()
-                depo_sby = depo_sby[depo_sby["ID_1"].isna()].copy()
+                cabang_sby["ID_1"] = cabang_sby["Keperluan"].str.extract(r'(?:ID)?BKM\s*[:\-]?\s*(\d+/\d{4})', expand=False)
+                cabang_sby_bkm = cabang_sby[cabang_sby["ID_1"].notna()].copy()
+                cabang_sby = cabang_sby[cabang_sby["ID_1"].isna()].copy()
 
-                depo_sby_va_ri = depo_sby[
-                    depo_sby["Keperluan"].str.contains("PENERIMAAN GIRO DENGAN VA|KODE LAWAN RI", case=False, na=False)
+                cabang_sby_va_ri = cabang_sby[
+                    cabang_sby["Keperluan"].str.contains("PENERIMAAN GIRO DENGAN VA|KODE LAWAN RI", case=False, na=False)
                 ].copy()
-                depo_sby = depo_sby[
-                    ~depo_sby["Keperluan"].str.contains("PENERIMAAN GIRO DENGAN VA|KODE LAWAN RI", case=False, na=False)
+                cabang_sby = cabang_sby[
+                    ~cabang_sby["Keperluan"].str.contains("PENERIMAAN GIRO DENGAN VA|KODE LAWAN RI", case=False, na=False)
                 ].copy()
                 
-                # --- PROSES SBY DEPO ---
+                # --- PROSES SBY CABANG ---
                 # Logika pemisah fleksibel Anda tetap dipertahankan
-                sby_depo = pd.read_csv(sby_depo_file, sep=None, engine='python', encoding='utf-8-sig')
-                available_cols_sby_depo = [col for col in columns if col in sby_depo.columns]
-                sby_depo = sby_depo[available_cols_sby_depo].copy()
+                sby_cabang = pd.read_csv(sby_cabang_file, sep=None, engine='python', encoding='utf-8-sig')
+                available_cols_sby_cabang = [col for col in columns if col in sby_cabang.columns]
+                sby_cabang = sby_cabang[available_cols_sby_cabang].copy()
 
-                # (DIHAPUS) Blok 'if gantungan_sby_depo_file is not None' dihapus
+                # (DIHAPUS) Blok 'if gantungan_sby_cabang_file is not None' dihapus
                 
                 # (Logika asli Anda berlanjut)
-                sby_depo["ID_1"] = np.nan
-                sby_depo = sby_depo.reset_index()
+                sby_cabang["ID_1"] = np.nan
+                sby_cabang = sby_cabang.reset_index()
 
-                sby_depo["Debet"] = sby_depo["Debet"].replace("-", 0)
-                sby_depo["Kredit"] = sby_depo["Kredit"].replace("-", 0)
-                sby_depo["Debet"] = sby_depo["Debet"].astype(str).str.replace(",", "", regex=False)
-                sby_depo["Kredit"] = sby_depo["Kredit"].astype(str).str.replace(",", "", regex=False)
-                sby_depo["Debet"] = pd.to_numeric(sby_depo["Debet"]).fillna(0)
-                sby_depo["Kredit"] = pd.to_numeric(sby_depo["Kredit"]).fillna(0)
+                sby_cabang["Debet"] = sby_cabang["Debet"].replace("-", 0)
+                sby_cabang["Kredit"] = sby_cabang["Kredit"].replace("-", 0)
+                sby_cabang["Debet"] = sby_cabang["Debet"].astype(str).str.replace(",", "", regex=False)
+                sby_cabang["Kredit"] = sby_cabang["Kredit"].astype(str).str.replace(",", "", regex=False)
+                sby_cabang["Debet"] = pd.to_numeric(sby_cabang["Debet"]).fillna(0)
+                sby_cabang["Kredit"] = pd.to_numeric(sby_cabang["Kredit"]).fillna(0)
 
-                sby_depo_PN = sby_depo[sby_depo['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
-                sby_depo = sby_depo[~sby_depo['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
+                sby_cabang_PN = sby_cabang[sby_cabang['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
+                sby_cabang = sby_cabang[~sby_cabang['Keperluan'].str.contains("PEMBAYARAN ATAS NOTA", case=False, na=False)].copy()
 
-                sby_depo_jmu = sby_depo[
-                    sby_depo["Keperluan"].str.contains("JMU ASD|JMU ASK", case=False, na=False)
+                sby_cabang_jmu = sby_cabang[
+                    sby_cabang["Keperluan"].str.contains("JMU ASD|JMU ASK", case=False, na=False)
                 ].copy()
-                sby_depo = sby_depo[~sby_depo["Keperluan"].str.contains("JMU ASD|JMU ASK", case=False, na=False)].copy()
+                sby_cabang = sby_cabang[~sby_cabang["Keperluan"].str.contains("JMU ASD|JMU ASK", case=False, na=False)].copy()
 
-                sby_depo["ID_1"] = sby_depo["Keperluan"].str.extract(r'(?:ID)?BKK\s*[:\-]?\s*(\d+/\d{4})', expand=False)
-                sby_depo_bkk = sby_depo[sby_depo["ID_1"].notna()].copy()
-                sby_depo = sby_depo[sby_depo["ID_1"].isna()].copy()
+                sby_cabang["ID_1"] = sby_cabang["Keperluan"].str.extract(r'(?:ID)?BKK\s*[:\-]?\s*(\d+/\d{4})', expand=False)
+                sby_cabang_bkk = sby_cabang[sby_cabang["ID_1"].notna()].copy()
+                sby_cabang = sby_cabang[sby_cabang["ID_1"].isna()].copy()
 
-                sby_depo["ID_1"] = sby_depo["Keperluan"].str.extract(r'(?:ID)?BKM\s*[:\-]?\s*(\d+/\d{4})', expand=False)
-                sby_depo_bkm = sby_depo[sby_depo["ID_1"].notna()].copy()
-                sby_depo = sby_depo[sby_depo["ID_1"].isna()].copy()
+                sby_cabang["ID_1"] = sby_cabang["Keperluan"].str.extract(r'(?:ID)?BKM\s*[:\-]?\s*(\d+/\d{4})', expand=False)
+                sby_cabang_bkm = sby_cabang[sby_cabang["ID_1"].notna()].copy()
+                sby_cabang = sby_cabang[sby_cabang["ID_1"].isna()].copy()
 
-                sby_depo_va_ri = sby_depo[
-                    sby_depo["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
+                sby_cabang_va_ri = sby_cabang[
+                    sby_cabang["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
                 ].copy()
-                sby_depo = sby_depo[
-                    ~sby_depo["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
+                sby_cabang = sby_cabang[
+                    ~sby_cabang["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
                 ].copy()
 
                 # --- PROSES TOTAL (VA/RI) --- (TIDAK DIUBAH)
                 df_sebelumnya = pd.DataFrame({"Debet": [selisih_sebelumnya]})
-                depo_sby_va_ri = pd.concat([df_sebelumnya, depo_sby_va_ri], ignore_index=True)
+                cabang_sby_va_ri = pd.concat([df_sebelumnya, cabang_sby_va_ri], ignore_index=True)
 
                 total_va_ri = pd.DataFrame({
-                    "Debet": [depo_sby_va_ri["Debet"].sum() + sby_depo_va_ri["Debet"].sum()],
-                    "Kredit": [depo_sby_va_ri["Kredit"].sum() + sby_depo_va_ri["Kredit"].sum()],
-                    "Tempat Pembayaran": [(depo_sby_va_ri["Debet"].sum() + sby_depo_va_ri["Debet"].sum()) - (depo_sby_va_ri["Kredit"].sum() + sby_depo_va_ri["Kredit"].sum())]
+                    "Debet": [cabang_sby_va_ri["Debet"].sum() + sby_cabang_va_ri["Debet"].sum()],
+                    "Kredit": [cabang_sby_va_ri["Kredit"].sum() + sby_cabang_va_ri["Kredit"].sum()],
+                    "Tempat Pembayaran": [(cabang_sby_va_ri["Debet"].sum() + sby_cabang_va_ri["Debet"].sum()) - (cabang_sby_va_ri["Kredit"].sum() + sby_cabang_va_ri["Kredit"].sum())]
                 })
 
-                sby_depo_va_ri_total = pd.concat([sby_depo_va_ri, total_va_ri], ignore_index=True)
-                depo_sby_va_ri_total = pd.concat([depo_sby_va_ri, total_va_ri], ignore_index=True)
-                sby_depo_va_ri_total["Grup"] = "A1"
-                depo_sby_va_ri_total["Grup"] = "A1"
+                sby_cabang_va_ri_total = pd.concat([sby_cabang_va_ri, total_va_ri], ignore_index=True)
+                cabang_sby_va_ri_total = pd.concat([cabang_sby_va_ri, total_va_ri], ignore_index=True)
+                sby_cabang_va_ri_total["Grup"] = "A1"
+                cabang_sby_va_ri_total["Grup"] = "A1"
 
 
                 # --- PROSES TOTAL (PN) --- (TIDAK DIUBAH)
                 total_row_PN = pd.DataFrame({
-                    "Debet": [depo_sby_PN["Debet"].sum() + sby_depo_PN["Debet"].sum()],
-                    "Kredit": [depo_sby_PN["Kredit"].sum() + sby_depo_PN["Kredit"].sum()],
-                    "Tempat Pembayaran": [(depo_sby_PN["Debet"].sum() + sby_depo_PN["Debet"].sum()) - (depo_sby_PN["Kredit"].sum() + sby_depo_PN["Kredit"].sum())]
+                    "Debet": [cabang_sby_PN["Debet"].sum() + sby_cabang_PN["Debet"].sum()],
+                    "Kredit": [cabang_sby_PN["Kredit"].sum() + sby_cabang_PN["Kredit"].sum()],
+                    "Tempat Pembayaran": [(cabang_sby_PN["Debet"].sum() + sby_cabang_PN["Debet"].sum()) - (cabang_sby_PN["Kredit"].sum() + sby_cabang_PN["Kredit"].sum())]
                 })
-                depo_sby_PN_total = pd.concat([depo_sby_PN, total_row_PN], ignore_index=True)
-                sby_depo_PN_total = pd.concat([sby_depo_PN, total_row_PN], ignore_index=True)
-                depo_sby_PN_total["Grup"] = "A2"
-                sby_depo_PN_total["Grup"] = "A2"
+                cabang_sby_PN_total = pd.concat([cabang_sby_PN, total_row_PN], ignore_index=True)
+                sby_cabang_PN_total = pd.concat([sby_cabang_PN, total_row_PN], ignore_index=True)
+                cabang_sby_PN_total["Grup"] = "A2"
+                sby_cabang_PN_total["Grup"] = "A2"
 
                 # --- PROSES MATCHING (BKK/BKM) --- (TIDAK DIUBAH)
-                list_bkk_depo_sby = depo_sby_bkk["ID_1"].unique().tolist()
-                sby_depo_bkk_matched = sby_depo[sby_depo["ID Dokumen"].isin(list_bkk_depo_sby)].copy()
-                sby_depo = sby_depo[~sby_depo["ID Dokumen"].isin(list_bkk_depo_sby)].copy()
+                list_bkk_cabang_sby = cabang_sby_bkk["ID_1"].unique().tolist()
+                sby_cabang_bkk_matched = sby_cabang[sby_cabang["ID Dokumen"].isin(list_bkk_cabang_sby)].copy()
+                sby_cabang = sby_cabang[~sby_cabang["ID Dokumen"].isin(list_bkk_cabang_sby)].copy()
 
                 total_row_bkk = pd.DataFrame({
-                    "Debet": [depo_sby_bkk["Debet"].sum() + sby_depo_bkk_matched["Debet"].sum()],
-                    "Kredit": [depo_sby_bkk["Kredit"].sum() + sby_depo_bkk_matched["Kredit"].sum()],
-                    "Tempat Pembayaran": [(depo_sby_bkk["Debet"].sum() + sby_depo_bkk_matched["Debet"].sum()) - (depo_sby_bkk["Kredit"].sum() + sby_depo_bkk_matched["Kredit"].sum())]
+                    "Debet": [cabang_sby_bkk["Debet"].sum() + sby_cabang_bkk_matched["Debet"].sum()],
+                    "Kredit": [cabang_sby_bkk["Kredit"].sum() + sby_cabang_bkk_matched["Kredit"].sum()],
+                    "Tempat Pembayaran": [(cabang_sby_bkk["Debet"].sum() + sby_cabang_bkk_matched["Debet"].sum()) - (cabang_sby_bkk["Kredit"].sum() + sby_cabang_bkk_matched["Kredit"].sum())]
                 })
-                depo_sby_bkk_total = pd.concat([depo_sby_bkk, total_row_bkk], ignore_index=True)
-                sby_depo_bkk_matched_total = pd.concat([sby_depo_bkk_matched, total_row_bkk], ignore_index=True)
-                depo_sby_bkk_total["Grup"] = "A3"
-                sby_depo_bkk_matched_total["Grup"] = "A3"
+                cabang_sby_bkk_total = pd.concat([cabang_sby_bkk, total_row_bkk], ignore_index=True)
+                sby_cabang_bkk_matched_total = pd.concat([sby_cabang_bkk_matched, total_row_bkk], ignore_index=True)
+                cabang_sby_bkk_total["Grup"] = "A3"
+                sby_cabang_bkk_matched_total["Grup"] = "A3"
 
 
-                list_bkm_depo_sby = depo_sby_bkm["ID_1"].unique().tolist()
-                sby_depo_bkm_matched = sby_depo[sby_depo["ID Dokumen"].isin(list_bkm_depo_sby)].copy()
-                sby_depo = sby_depo[~sby_depo["ID Dokumen"].isin(list_bkm_depo_sby)].copy()
+                list_bkm_cabang_sby = cabang_sby_bkm["ID_1"].unique().tolist()
+                sby_cabang_bkm_matched = sby_cabang[sby_cabang["ID Dokumen"].isin(list_bkm_cabang_sby)].copy()
+                sby_cabang = sby_cabang[~sby_cabang["ID Dokumen"].isin(list_bkm_cabang_sby)].copy()
 
                 total_row_bkm = pd.DataFrame({
-                    "Debet": [depo_sby_bkm["Debet"].sum() + sby_depo_bkm_matched["Debet"].sum()],
-                    "Kredit": [depo_sby_bkm["Kredit"].sum() + sby_depo_bkm_matched["Kredit"].sum()],
-                    "Tempat Pembayaran": [(depo_sby_bkm["Debet"].sum() + sby_depo_bkm_matched["Debet"].sum()) - (depo_sby_bkm["Kredit"].sum() + sby_depo_bkm_matched["Kredit"].sum())]
+                    "Debet": [cabang_sby_bkm["Debet"].sum() + sby_cabang_bkm_matched["Debet"].sum()],
+                    "Kredit": [cabang_sby_bkm["Kredit"].sum() + sby_cabang_bkm_matched["Kredit"].sum()],
+                    "Tempat Pembayaran": [(cabang_sby_bkm["Debet"].sum() + sby_cabang_bkm_matched["Debet"].sum()) - (cabang_sby_bkm["Kredit"].sum() + sby_cabang_bkm_matched["Kredit"].sum())]
                 })
-                depo_sby_bkm_total = pd.concat([depo_sby_bkm, total_row_bkm], ignore_index=True)
-                sby_depo_bkm_matched_total = pd.concat([sby_depo_bkm_matched, total_row_bkm], ignore_index=True)
-                depo_sby_bkm_total["Grup"] = "A4"
-                sby_depo_bkm_matched_total["Grup"] = "A4"
+                cabang_sby_bkm_total = pd.concat([cabang_sby_bkm, total_row_bkm], ignore_index=True)
+                sby_cabang_bkm_matched_total = pd.concat([sby_cabang_bkm_matched, total_row_bkm], ignore_index=True)
+                cabang_sby_bkm_total["Grup"] = "A4"
+                sby_cabang_bkm_matched_total["Grup"] = "A4"
 
-                list_bkk_sby_depo = sby_depo_bkk["ID_1"].unique().tolist()
-                depo_sby_bkk_matched = depo_sby[depo_sby["ID Dokumen"].isin(list_bkk_sby_depo)].copy()
-                depo_sby = depo_sby[~depo_sby["ID Dokumen"].isin(list_bkk_sby_depo)].copy()
+                list_bkk_sby_cabang = sby_cabang_bkk["ID_1"].unique().tolist()
+                cabang_sby_bkk_matched = cabang_sby[cabang_sby["ID Dokumen"].isin(list_bkk_sby_cabang)].copy()
+                cabang_sby = cabang_sby[~cabang_sby["ID Dokumen"].isin(list_bkk_sby_cabang)].copy()
 
                 total_row_bkk_2 = pd.DataFrame({
-                    "Debet": [sby_depo_bkk["Debet"].sum() + depo_sby_bkk_matched["Debet"].sum()],
-                    "Kredit": [sby_depo_bkk["Kredit"].sum() + depo_sby_bkk_matched["Kredit"].sum()],
-                    "Tempat Pembayaran": [(sby_depo_bkk["Debet"].sum() + depo_sby_bkk_matched["Debet"].sum()) - (sby_depo_bkk["Kredit"].sum() + depo_sby_bkk_matched["Kredit"].sum())]
+                    "Debet": [sby_cabang_bkk["Debet"].sum() + cabang_sby_bkk_matched["Debet"].sum()],
+                    "Kredit": [sby_cabang_bkk["Kredit"].sum() + cabang_sby_bkk_matched["Kredit"].sum()],
+                    "Tempat Pembayaran": [(sby_cabang_bkk["Debet"].sum() + cabang_sby_bkk_matched["Debet"].sum()) - (sby_cabang_bkk["Kredit"].sum() + cabang_sby_bkk_matched["Kredit"].sum())]
                 })
-                sby_depo_bkk_total = pd.concat([sby_depo_bkk, total_row_bkk_2], ignore_index=True)
-                depo_sby_bkk_matched_total = pd.concat([depo_sby_bkk_matched, total_row_bkk_2], ignore_index=True)
-                sby_depo_bkk_total["Grup"] = "A5"
-                depo_sby_bkk_matched_total["Grup"] = "A5"
+                sby_cabang_bkk_total = pd.concat([sby_cabang_bkk, total_row_bkk_2], ignore_index=True)
+                cabang_sby_bkk_matched_total = pd.concat([cabang_sby_bkk_matched, total_row_bkk_2], ignore_index=True)
+                sby_cabang_bkk_total["Grup"] = "A5"
+                cabang_sby_bkk_matched_total["Grup"] = "A5"
 
-                list_bkm_sby_depo = sby_depo_bkm["ID_1"].unique().tolist()
-                depo_sby_bkm_matched = depo_sby[depo_sby["ID Dokumen"].isin(list_bkm_sby_depo)].copy()
-                depo_sby = depo_sby[~depo_sby["ID Dokumen"].isin(list_bkm_sby_depo)].copy()
+                list_bkm_sby_cabang = sby_cabang_bkm["ID_1"].unique().tolist()
+                cabang_sby_bkm_matched = cabang_sby[cabang_sby["ID Dokumen"].isin(list_bkm_sby_cabang)].copy()
+                cabang_sby = cabang_sby[~cabang_sby["ID Dokumen"].isin(list_bkm_sby_cabang)].copy()
 
                 total_row_bkm_2 = pd.DataFrame({
-                    "Debet": [sby_depo_bkm["Debet"].sum() + depo_sby_bkm_matched["Debet"].sum()],
-                    "Kredit": [sby_depo_bkm["Kredit"].sum() + depo_sby_bkm_matched["Kredit"].sum()],
-                    "Tempat Pembayaran": [(sby_depo_bkm["Debet"].sum() + depo_sby_bkm_matched["Debet"].sum()) - (sby_depo_bkm["Kredit"].sum() + depo_sby_bkm_matched["Kredit"].sum())]
+                    "Debet": [sby_cabang_bkm["Debet"].sum() + cabang_sby_bkm_matched["Debet"].sum()],
+                    "Kredit": [sby_cabang_bkm["Kredit"].sum() + cabang_sby_bkm_matched["Kredit"].sum()],
+                    "Tempat Pembayaran": [(sby_cabang_bkm["Debet"].sum() + cabang_sby_bkm_matched["Debet"].sum()) - (sby_cabang_bkm["Kredit"].sum() + cabang_sby_bkm_matched["Kredit"].sum())]
                 })
-                sby_depo_bkm_total = pd.concat([sby_depo_bkm, total_row_bkm_2], ignore_index=True)
-                depo_sby_bkm_matched_total = pd.concat([depo_sby_bkm_matched, total_row_bkm_2], ignore_index=True)
-                sby_depo_bkm_total["Grup"] = "A6"
-                depo_sby_bkm_matched_total["Grup"] = "A6"
+                sby_cabang_bkm_total = pd.concat([sby_cabang_bkm, total_row_bkm_2], ignore_index=True)
+                cabang_sby_bkm_matched_total = pd.concat([cabang_sby_bkm_matched, total_row_bkm_2], ignore_index=True)
+                sby_cabang_bkm_total["Grup"] = "A6"
+                cabang_sby_bkm_matched_total["Grup"] = "A6"
 
                 # --- PROSES TOTAL (JMU) --- (TIDAK DIUBAH)
                 total_jmu = pd.DataFrame({
-                    "Debet": [sby_depo_jmu["Debet"].sum()],
-                    "Kredit": [sby_depo_jmu["Kredit"].sum()],
-                    "Tempat Pembayaran": [sby_depo_jmu["Debet"].sum() - sby_depo_jmu["Kredit"].sum()]
+                    "Debet": [sby_cabang_jmu["Debet"].sum()],
+                    "Kredit": [sby_cabang_jmu["Kredit"].sum()],
+                    "Tempat Pembayaran": [sby_cabang_jmu["Debet"].sum() - sby_cabang_jmu["Kredit"].sum()]
                 })
-                sby_depo_jmu_total = pd.concat([sby_depo_jmu, total_jmu], ignore_index=True)
-                sby_depo_jmu_total["Grup"] = "B1"
+                sby_cabang_jmu_total = pd.concat([sby_cabang_jmu, total_jmu], ignore_index=True)
+                sby_cabang_jmu_total["Grup"] = "B1"
 
                 # --- PROSES REKONSILIASI GANTUNGAN (OFFSET) --- (TIDAK DIUBAH)
-                depo_sby["Sumber"] = "depo_sby"
-                sby_depo["Sumber"] = "sby_depo"
-                gabungan = pd.concat([depo_sby, sby_depo], ignore_index=True)
+                cabang_sby["Sumber"] = "cabang_sby"
+                sby_cabang["Sumber"] = "sby_cabang"
+                gabungan = pd.concat([cabang_sby, sby_cabang], ignore_index=True)
 
                 offset_df, gantung_df = reconcile_accounts_table(gabungan)
 
-                offset_df_depo_sby = offset_df[offset_df["Sumber"] == "depo_sby"].copy()
-                offset_df_sby_depo = offset_df[offset_df["Sumber"] == "sby_depo"].copy()
+                offset_df_cabang_sby = offset_df[offset_df["Sumber"] == "cabang_sby"].copy()
+                offset_df_sby_cabang = offset_df[offset_df["Sumber"] == "sby_cabang"].copy()
 
                 total_offset = pd.DataFrame({
-                    "Debet": [offset_df_sby_depo["Debet"].sum() + offset_df_depo_sby["Debet"].sum()],
-                    "Kredit": [offset_df_sby_depo["Kredit"].sum() + offset_df_depo_sby["Kredit"].sum()],
-                    "Tempat Pembayaran": [(offset_df_sby_depo["Debet"].sum() + offset_df_depo_sby["Debet"].sum()) - (offset_df_sby_depo["Kredit"].sum() + offset_df_depo_sby["Kredit"].sum())]
+                    "Debet": [offset_df_sby_cabang["Debet"].sum() + offset_df_cabang_sby["Debet"].sum()],
+                    "Kredit": [offset_df_sby_cabang["Kredit"].sum() + offset_df_cabang_sby["Kredit"].sum()],
+                    "Tempat Pembayaran": [(offset_df_sby_cabang["Debet"].sum() + offset_df_cabang_sby["Debet"].sum()) - (offset_df_sby_cabang["Kredit"].sum() + offset_df_cabang_sby["Kredit"].sum())]
                 })
-                offset_df_depo_sby_total = pd.concat([offset_df_depo_sby, total_offset], ignore_index=True)
-                offset_df_sby_depo_total = pd.concat([offset_df_sby_depo, total_offset], ignore_index=True)
-                offset_df_depo_sby_total["Grup"] = "C1"
-                offset_df_sby_depo_total["Grup"] = "C1"
+                offset_df_cabang_sby_total = pd.concat([offset_df_cabang_sby, total_offset], ignore_index=True)
+                offset_df_sby_cabang_total = pd.concat([offset_df_sby_cabang, total_offset], ignore_index=True)
+                offset_df_cabang_sby_total["Grup"] = "C1"
+                offset_df_sby_cabang_total["Grup"] = "C1"
 
-                gantung_df_depo_sby = gantung_df[gantung_df["Sumber"] == "depo_sby"].copy()
-                total_gantung_depo_sby = pd.DataFrame({
-                    "Debet": [gantung_df_depo_sby["Debet"].sum()],
-                    "Kredit": [gantung_df_depo_sby["Kredit"].sum()]
+                gantung_df_cabang_sby = gantung_df[gantung_df["Sumber"] == "cabang_sby"].copy()
+                total_gantung_cabang_sby = pd.DataFrame({
+                    "Debet": [gantung_df_cabang_sby["Debet"].sum()],
+                    "Kredit": [gantung_df_cabang_sby["Kredit"].sum()]
                 })
-                gantung_df_depo_sby_total = pd.concat([gantung_df_depo_sby, total_gantung_depo_sby], ignore_index=True)
-                gantung_df_depo_sby_total["Grup"] = "D1"
+                gantung_df_cabang_sby_total = pd.concat([gantung_df_cabang_sby, total_gantung_cabang_sby], ignore_index=True)
+                gantung_df_cabang_sby_total["Grup"] = "D1"
 
-                gantung_sby_depo = gantung_df[gantung_df["Sumber"] == "sby_depo"].copy()
-                total_gantung_sby_depo = pd.DataFrame({
-                    "Debet": [gantung_sby_depo["Debet"].sum()],
-                    "Kredit": [gantung_sby_depo["Kredit"].sum()]
+                gantung_sby_cabang = gantung_df[gantung_df["Sumber"] == "sby_cabang"].copy()
+                total_gantung_sby_cabang = pd.DataFrame({
+                    "Debet": [gantung_sby_cabang["Debet"].sum()],
+                    "Kredit": [gantung_sby_cabang["Kredit"].sum()]
                 })
-                gantung_df_sby_depo_total = pd.concat([gantung_sby_depo, total_gantung_sby_depo], ignore_index=True)
-                gantung_df_sby_depo_total["Grup"] = "D2"
+                gantung_df_sby_cabang_total = pd.concat([gantung_sby_cabang, total_gantung_sby_cabang], ignore_index=True)
+                gantung_df_sby_cabang_total["Grup"] = "D2"
 
                 # --- PROSES FINALISASI & EXPORT --- (TIDAK DIUBAH)
                 columns_final = [
@@ -412,12 +412,12 @@ if process_button:
 
 
                 list_df_names = [
-                    "depo_sby_va_ri_total", "depo_sby_PN_total", "depo_sby_bkk_total", "depo_sby_bkm_total",
-                    "depo_sby_bkk_matched_total", "depo_sby_bkm_matched_total", "offset_df_depo_sby_total",
-                    "gantung_df_depo_sby_total", "sby_depo_va_ri_total", "sby_depo_PN_total",
-                    "sby_depo_jmu_total", "sby_depo_bkk_matched_total", "sby_depo_bkm_matched_total",
-                    "sby_depo_bkk_total", "sby_depo_bkm_total", "offset_df_sby_depo_total",
-                    "gantung_df_sby_depo_total"
+                    "cabang_sby_va_ri_total", "cabang_sby_PN_total", "cabang_sby_bkk_total", "cabang_sby_bkm_total",
+                    "cabang_sby_bkk_matched_total", "cabang_sby_bkm_matched_total", "offset_df_cabang_sby_total",
+                    "gantung_df_cabang_sby_total", "sby_cabang_va_ri_total", "sby_cabang_PN_total",
+                    "sby_cabang_jmu_total", "sby_cabang_bkk_matched_total", "sby_cabang_bkm_matched_total",
+                    "sby_cabang_bkk_total", "sby_cabang_bkm_total", "offset_df_sby_cabang_total",
+                    "gantung_df_sby_cabang_total"
                 ]
                 
                 for name in list_df_names:
@@ -426,28 +426,28 @@ if process_button:
                         available_cols = [col for col in columns_final if col in df.columns]
                         globals()[name] = df[available_cols]
 
-                list_df_depo_sby = [
-                    "gantung_df_depo_sby_total", "depo_sby_va_ri_total", "depo_sby_PN_total",
-                    "depo_sby_bkk_total", "depo_sby_bkm_total", "depo_sby_bkk_matched_total",
-                    "depo_sby_bkm_matched_total", "offset_df_depo_sby_total"
+                list_df_cabang_sby = [
+                    "gantung_df_cabang_sby_total", "cabang_sby_va_ri_total", "cabang_sby_PN_total",
+                    "cabang_sby_bkk_total", "cabang_sby_bkm_total", "cabang_sby_bkk_matched_total",
+                    "cabang_sby_bkm_matched_total", "offset_df_cabang_sby_total"
                 ]
 
-                list_df_sby_depo = [
-                    "gantung_df_sby_depo_total", "sby_depo_va_ri_total", "sby_depo_PN_total",
-                    "sby_depo_jmu_total", "sby_depo_bkk_matched_total", "sby_depo_bkm_matched_total",
-                    "sby_depo_bkk_total", "sby_depo_bkm_total", "offset_df_sby_depo_total"
+                list_df_sby_cabang = [
+                    "gantung_df_sby_cabang_total", "sby_cabang_va_ri_total", "sby_cabang_PN_total",
+                    "sby_cabang_jmu_total", "sby_cabang_bkk_matched_total", "sby_cabang_bkm_matched_total",
+                    "sby_cabang_bkk_total", "sby_cabang_bkm_total", "offset_df_sby_cabang_total"
                 ]
 
-                depo_sby_all_combined = combine_with_spacing(list_df_depo_sby, columns_final)
-                sby_depo_all_combined = combine_with_spacing(list_df_sby_depo, columns_final)
+                cabang_sby_all_combined = combine_with_spacing(list_df_cabang_sby, columns_final)
+                sby_cabang_all_combined = combine_with_spacing(list_df_sby_cabang, columns_final)
 
                 # == AKHIR KODE ASLI ANDA ==
 
                 # --- BUAT FILE EXCEL DI MEMORY ---
                 output_buffer = io.BytesIO()
                 with pd.ExcelWriter(output_buffer, engine="xlsxwriter") as writer:
-                    depo_sby_all_combined.to_excel(writer, sheet_name="depo_sby", index=False)
-                    sby_depo_all_combined.to_excel(writer, sheet_name="sby_depo", index=False)
+                    cabang_sby_all_combined.to_excel(writer, sheet_name="cabang_sby", index=False)
+                    sby_cabang_all_combined.to_excel(writer, sheet_name="sby_cabang", index=False)
                 
                 output_buffer.seek(0) 
 
