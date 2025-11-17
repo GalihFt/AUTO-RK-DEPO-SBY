@@ -278,6 +278,8 @@ if process_button:
 
                 sby_depo_va_ri_total = pd.concat([sby_depo_va_ri, total_va_ri], ignore_index=True)
                 depo_sby_va_ri_total = pd.concat([depo_sby_va_ri, total_va_ri], ignore_index=True)
+                sby_depo_va_ri_total["Grup"] = "A1"
+                depo_sby_va_ri_total["Grup"] = "A1"
 
 
                 # --- PROSES TOTAL (PN) --- (TIDAK DIUBAH)
@@ -288,6 +290,8 @@ if process_button:
                 })
                 depo_sby_PN_total = pd.concat([depo_sby_PN, total_row_PN], ignore_index=True)
                 sby_depo_PN_total = pd.concat([sby_depo_PN, total_row_PN], ignore_index=True)
+                depo_sby_PN_total["Grup"] = "A2"
+                sby_depo_PN_total["Grup"] = "A2"
 
                 # --- PROSES MATCHING (BKK/BKM) --- (TIDAK DIUBAH)
                 list_bkk_depo_sby = depo_sby_bkk["ID_1"].unique().tolist()
@@ -301,6 +305,9 @@ if process_button:
                 })
                 depo_sby_bkk_total = pd.concat([depo_sby_bkk, total_row_bkk], ignore_index=True)
                 sby_depo_bkk_matched_total = pd.concat([sby_depo_bkk_matched, total_row_bkk], ignore_index=True)
+                depo_sby_bkk_total["Grup"] = "A3"
+                sby_depo_bkk_matched_total["Grup"] = "A3"
+
 
                 list_bkm_depo_sby = depo_sby_bkm["ID_1"].unique().tolist()
                 sby_depo_bkm_matched = sby_depo[sby_depo["ID Dokumen"].isin(list_bkm_depo_sby)].copy()
@@ -313,6 +320,8 @@ if process_button:
                 })
                 depo_sby_bkm_total = pd.concat([depo_sby_bkm, total_row_bkm], ignore_index=True)
                 sby_depo_bkm_matched_total = pd.concat([sby_depo_bkm_matched, total_row_bkm], ignore_index=True)
+                depo_sby_bkm_total["Grup"] = "A4"
+                sby_depo_bkm_matched_total["Grup"] = "A4"
 
                 list_bkk_sby_depo = sby_depo_bkk["ID_1"].unique().tolist()
                 depo_sby_bkk_matched = depo_sby[depo_sby["ID Dokumen"].isin(list_bkk_sby_depo)].copy()
@@ -325,6 +334,8 @@ if process_button:
                 })
                 sby_depo_bkk_total = pd.concat([sby_depo_bkk, total_row_bkk_2], ignore_index=True)
                 depo_sby_bkk_matched_total = pd.concat([depo_sby_bkk_matched, total_row_bkk_2], ignore_index=True)
+                sby_depo_bkk_total["Grup"] = "A5"
+                depo_sby_bkk_matched_total["Grup"] = "A5"
 
                 list_bkm_sby_depo = sby_depo_bkm["ID_1"].unique().tolist()
                 depo_sby_bkm_matched = depo_sby[depo_sby["ID Dokumen"].isin(list_bkm_sby_depo)].copy()
@@ -337,6 +348,8 @@ if process_button:
                 })
                 sby_depo_bkm_total = pd.concat([sby_depo_bkm, total_row_bkm_2], ignore_index=True)
                 depo_sby_bkm_matched_total = pd.concat([depo_sby_bkm_matched, total_row_bkm_2], ignore_index=True)
+                sby_depo_bkm_total["Grup"] = "A6"
+                depo_sby_bkm_matched_total["Grup"] = "A6"
 
                 # --- PROSES TOTAL (JMU) --- (TIDAK DIUBAH)
                 total_jmu = pd.DataFrame({
@@ -345,6 +358,7 @@ if process_button:
                     "Tempat Pembayaran": [sby_depo_jmu["Debet"].sum() - sby_depo_jmu["Kredit"].sum()]
                 })
                 sby_depo_jmu_total = pd.concat([sby_depo_jmu, total_jmu], ignore_index=True)
+                sby_depo_jmu_total["Grup"] = "B1"
 
                 # --- PROSES REKONSILIASI GANTUNGAN (OFFSET) --- (TIDAK DIUBAH)
                 depo_sby["Sumber"] = "depo_sby"
@@ -363,6 +377,8 @@ if process_button:
                 })
                 offset_df_depo_sby_total = pd.concat([offset_df_depo_sby, total_offset], ignore_index=True)
                 offset_df_sby_depo_total = pd.concat([offset_df_sby_depo, total_offset], ignore_index=True)
+                offset_df_depo_sby_total["Grup"] = "C1"
+                offset_df_sby_depo_total["Grup"] = "C1"
 
                 gantung_df_depo_sby = gantung_df[gantung_df["Sumber"] == "depo_sby"].copy()
                 total_gantung_depo_sby = pd.DataFrame({
@@ -370,6 +386,7 @@ if process_button:
                     "Kredit": [gantung_df_depo_sby["Kredit"].sum()]
                 })
                 gantung_df_depo_sby_total = pd.concat([gantung_df_depo_sby, total_gantung_depo_sby], ignore_index=True)
+                gantung_df_depo_sby_total["Grup"] = "D1"
 
                 gantung_sby_depo = gantung_df[gantung_df["Sumber"] == "sby_depo"].copy()
                 total_gantung_sby_depo = pd.DataFrame({
@@ -377,9 +394,11 @@ if process_button:
                     "Kredit": [gantung_sby_depo["Kredit"].sum()]
                 })
                 gantung_df_sby_depo_total = pd.concat([gantung_sby_depo, total_gantung_sby_depo], ignore_index=True)
+                gantung_df_sby_depo_total["Grup"] = "D2"
 
                 # --- PROSES FINALISASI & EXPORT --- (TIDAK DIUBAH)
                 columns_final = [
+                    'Grup',
                     'index', 'Tanggal Kasir', 'ID Dokumen', 'Nomor Dokumen', 'Dibayarkan (ke/dari)', 'Keperluan',
                     'Vessel Voyage', 'Debet', 'Kredit', 'Tempat Pembayaran', 'Pembuat', 'Sumber Dokumen',
                     'Jenis Dokumen', 'Tanggal Delivery', 'Nama Kode', 'Kode Accounting', 'User Pengakuan',
