@@ -12,7 +12,8 @@ from collections import Counter
 st.set_page_config(layout="wide", page_title="Pencocokan Hutang/Piutang DEPO - SBY")
 
 st.title("Pencocokan Hutang/Piutang Afiliasi DEPO - SBY")
-st.markdown("Unggah 2 file CSV wajib (dan 2 file gantungan opsional) untuk memulai.")
+# Diubah: Menghapus referensi ke file gantungan
+st.markdown("Unggah 2 file CSV wajib (DEPO SBY & SBY DEPO) untuk memulai.")
 
 # ---------------------------------------------------------------------
 # FUNGSI-FUNGSI (DARI KODE ANDA - TIDAK DIUBAH)
@@ -142,24 +143,18 @@ def combine_with_spacing(list_df, all_columns):
     return pd.concat(combined, ignore_index=True)
 
 # ---------------------------------------------------------------------
-# TATA LETAK INPUT (UI) - DENGAN UPDATE OPSIONAL
+# TATA LETAK INPUT (UI) - DISEDERHANAKAN
 # ---------------------------------------------------------------------
 
 # --- Bagian DEPO - SBY ---
 st.header("Bagian DEPO - SBY")
-col1, col2 = st.columns(2)
-with col1:
-    depo_sby_file = st.file_uploader("Input File DEPO SBY (Wajib)", type="csv")
-with col2:
-    gantungan_depo_sby_file = st.file_uploader("Input file gantungan depo sby (Opsional)", type="csv")
+# Diubah: Menghapus st.columns dan file gantungan
+depo_sby_file = st.file_uploader("Input File DEPO SBY (Wajib)", type="csv")
 
 # --- Bagian SBY - DEPO ---
 st.header("Bagian SBY - DEPO")
-col3, col4 = st.columns(2)
-with col3:
-    sby_depo_file = st.file_uploader("Input file SBY DEPO (Wajib)", type="csv")
-with col4:
-    gantungan_sby_depo_file = st.file_uploader("Input file gantungan sby depo (Opsional)", type="csv")
+# Diubah: Menghapus st.columns dan file gantungan
+sby_depo_file = st.file_uploader("Input file SBY DEPO (Wajib)", type="csv")
 
 # --- Input Selisih ---
 st.header("Input Selisih")
@@ -171,10 +166,10 @@ st.divider()
 process_button = st.button("Mulai Proses Pencocokan", type="primary", use_container_width=True)
 
 # ---------------------------------------------------------------------
-# LOGIKA UTAMA (SAAT TOMBOL DITEKAN - HANYA VALIDASI & LOAD DIUBAH)
+# LOGIKA UTAMA (SAAT TOMBOL DITEKAN)
 # ---------------------------------------------------------------------
 if process_button:
-    # Validasi input (DIUBAH)
+    # Validasi input (Logika ini sudah benar, tidak perlu diubah)
     if not all([depo_sby_file, sby_depo_file]):
         st.error("Harap unggah file WAJIB (DEPO SBY & SBY DEPO) untuk melanjutkan.")
     else:
@@ -192,17 +187,13 @@ if process_button:
                 'Flag KBM/KDRT', 'Target_First', 'Target_Jenis', 'Target_Second'
                 ]
 
-                # --- PROSES DEPO SBY (DENGAN KONDISI) ---
+                # --- PROSES DEPO SBY ---
+                # Logika pemisah fleksibel Anda tetap dipertahankan
                 depo_sby = pd.read_csv(depo_sby_file, sep=None, engine='python', encoding='utf-8-sig')
                 available_cols_depo_sby = [col for col in columns if col in depo_sby.columns]
                 depo_sby = depo_sby[available_cols_depo_sby].copy()
                 
-                # (DIUBAH) Hanya muat dan gabung jika file diunggah
-                if gantungan_depo_sby_file is not None:
-                    depo_sby_gantungan = pd.read_csv(gantungan_depo_sby_file, sep=None, engine='python', encoding='utf-8-sig')
-                    available_cols_gantungan = [col for col in columns if col in depo_sby_gantungan.columns]
-                    depo_sby_gantungan = depo_sby_gantungan[available_cols_gantungan].copy()
-                    depo_sby = pd.concat([depo_sby, depo_sby_gantungan], ignore_index=True)
+                # (DIHAPUS) Blok 'if gantungan_depo_sby_file is not None' dihapus
 
                 # (Logika asli Anda berlanjut)
                 depo_sby["ID_1"] = np.nan
@@ -233,17 +224,13 @@ if process_button:
                     ~depo_sby["Keperluan"].str.contains("PENERIMAAN GIRO DENGAN VA|KODE LAWAN RI", case=False, na=False)
                 ].copy()
                 
-                # --- PROSES SBY DEPO (DENGAN KONDISI) ---
+                # --- PROSES SBY DEPO ---
+                # Logika pemisah fleksibel Anda tetap dipertahankan
                 sby_depo = pd.read_csv(sby_depo_file, sep=None, engine='python', encoding='utf-8-sig')
                 available_cols_sby_depo = [col for col in columns if col in sby_depo.columns]
                 sby_depo = sby_depo[available_cols_sby_depo].copy()
 
-                # (DIUBAH) Hanya muat dan gabung jika file diunggah
-                if gantungan_sby_depo_file is not None:
-                    sby_depo_gantungan = pd.read_csv(gantungan_sby_depo_file, sep=None, engine='python', encoding='utf-8-sig')
-                    available_cols_gantungan_sby_depo = [col for col in columns if col in sby_depo_gantungan.columns]
-                    sby_depo_gantungan = sby_depo_gantungan[available_cols_gantungan_sby_depo].copy()
-                    sby_depo = pd.concat([sby_depo, sby_depo_gantungan], ignore_index=True)
+                # (DIHAPUS) Blok 'if gantungan_sby_depo_file is not None' dihapus
                 
                 # (Logika asli Anda berlanjut)
                 sby_depo["ID_1"] = np.nan
@@ -279,7 +266,7 @@ if process_button:
                     ~sby_depo["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
                 ].copy()
 
-                # --- PROSES TOTAL (VA/RI) ---
+                # --- PROSES TOTAL (VA/RI) --- (TIDAK DIUBAH)
                 df_sebelumnya = pd.DataFrame({"Debet": [selisih_sebelumnya]})
                 depo_sby_va_ri = pd.concat([df_sebelumnya, depo_sby_va_ri], ignore_index=True)
 
@@ -293,7 +280,7 @@ if process_button:
                 depo_sby_va_ri_total = pd.concat([depo_sby_va_ri, total_va_ri], ignore_index=True)
 
 
-                # --- PROSES TOTAL (PN) ---
+                # --- PROSES TOTAL (PN) --- (TIDAK DIUBAH)
                 total_row_PN = pd.DataFrame({
                     "Debet": [depo_sby_PN["Debet"].sum() + sby_depo_PN["Debet"].sum()],
                     "Kredit": [depo_sby_PN["Kredit"].sum() + sby_depo_PN["Kredit"].sum()],
@@ -302,7 +289,7 @@ if process_button:
                 depo_sby_PN_total = pd.concat([depo_sby_PN, total_row_PN], ignore_index=True)
                 sby_depo_PN_total = pd.concat([sby_depo_PN, total_row_PN], ignore_index=True)
 
-                # --- PROSES MATCHING (BKK/BKM) ---
+                # --- PROSES MATCHING (BKK/BKM) --- (TIDAK DIUBAH)
                 list_bkk_depo_sby = depo_sby_bkk["ID_1"].unique().tolist()
                 sby_depo_bkk_matched = sby_depo[sby_depo["ID Dokumen"].isin(list_bkk_depo_sby)].copy()
                 sby_depo = sby_depo[~sby_depo["ID Dokumen"].isin(list_bkk_depo_sby)].copy()
@@ -351,7 +338,7 @@ if process_button:
                 sby_depo_bkm_total = pd.concat([sby_depo_bkm, total_row_bkm_2], ignore_index=True)
                 depo_sby_bkm_matched_total = pd.concat([depo_sby_bkm_matched, total_row_bkm_2], ignore_index=True)
 
-                # --- PROSES TOTAL (JMU) ---
+                # --- PROSES TOTAL (JMU) --- (TIDAK DIUBAH)
                 total_jmu = pd.DataFrame({
                     "Debet": [sby_depo_jmu["Debet"].sum()],
                     "Kredit": [sby_depo_jmu["Kredit"].sum()],
@@ -359,7 +346,7 @@ if process_button:
                 })
                 sby_depo_jmu_total = pd.concat([sby_depo_jmu, total_jmu], ignore_index=True)
 
-                # --- PROSES REKONSILIASI GANTUNGAN (OFFSET) ---
+                # --- PROSES REKONSILIASI GANTUNGAN (OFFSET) --- (TIDAK DIUBAH)
                 depo_sby["Sumber"] = "depo_sby"
                 sby_depo["Sumber"] = "sby_depo"
                 gabungan = pd.concat([depo_sby, sby_depo], ignore_index=True)
@@ -391,7 +378,7 @@ if process_button:
                 })
                 gantung_df_sby_depo_total = pd.concat([gantung_sby_depo, total_gantung_sby_depo], ignore_index=True)
 
-                # --- PROSES FINALISASI & EXPORT ---
+                # --- PROSES FINALISASI & EXPORT --- (TIDAK DIUBAH)
                 columns_final = [
                     'index', 'Tanggal Kasir', 'ID Dokumen', 'Nomor Dokumen', 'Dibayarkan (ke/dari)', 'Keperluan',
                     'Vessel Voyage', 'Debet', 'Kredit', 'Tempat Pembayaran', 'Pembuat', 'Sumber Dokumen',
