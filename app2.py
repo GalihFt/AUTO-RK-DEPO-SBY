@@ -13,7 +13,7 @@ st.set_page_config(layout="wide", page_title="Pencocokan Hutang/Piutang CABANG -
 
 st.title("Pencocokan Hutang/Piutang Afiliasi CABANG - SBY")
 # Diubah: Menghapus referensi ke file gantungan
-st.markdown("Unggah 2 file CSV wajib (CABANG SBY & SBY CABANG) untuk memulai.")
+st.markdown("Unggah 2 file CSV wajib (CABANG - SBY & SBY - CABANG) untuk memulai.")
 
 # ---------------------------------------------------------------------
 # FUNGSI-FUNGSI (DARI KODE ANDA - TIDAK DIUBAH)
@@ -149,12 +149,12 @@ def combine_with_spacing(list_df, all_columns):
 # --- Bagian CABANG - SBY ---
 st.header("Bagian CABANG - SBY")
 # Diubah: Menghapus st.columns dan file gantungan
-cabang_sby_file = st.file_uploader("Input File CABANG SBY (Wajib)", type="csv")
+cabang_sby_file = st.file_uploader("Input File CABANG - SBY (Wajib)", type="csv")
 
 # --- Bagian SBY - CABANG ---
 st.header("Bagian SBY - CABANG")
 # Diubah: Menghapus st.columns dan file gantungan
-sby_cabang_file = st.file_uploader("Input file SBY CABANG (Wajib)", type="csv")
+sby_cabang_file = st.file_uploader("Input file SBY - CABANG (Wajib)", type="csv")
 
 # --- Input Selisih ---
 st.header("Input Selisih")
