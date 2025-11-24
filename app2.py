@@ -260,10 +260,10 @@ if process_button:
                 sby_cabang = sby_cabang[sby_cabang["ID_1"].isna()].copy()
 
                 sby_cabang_va_ri = sby_cabang[
-                    sby_cabang["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
+                    sby_cabang["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO|PEMBAYARAN DPP TUNAI", case=False, na=False)
                 ].copy()
                 sby_cabang = sby_cabang[
-                    ~sby_cabang["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO", case=False, na=False)
+                    ~sby_cabang["Keperluan"].str.contains("PEMBAYARAN DPP GIRO|KODE LAWAN RO|PEMBAYARAN DPP TUNAI", case=False, na=False)
                 ].copy()
 
                 # --- PROSES TOTAL (VA/RI) --- (TIDAK DIUBAH)
